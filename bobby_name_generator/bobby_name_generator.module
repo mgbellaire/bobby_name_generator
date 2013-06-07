@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * This file is what controls all the input and output of this module.
+ */
+
+/**
+ * Implementation of hook_help.
+ */
+function bobby_name_generator_help($path, $arg) {
+  if ($path == 'admin/help#bobby_name_generator') {
+    return t('Type in your first name followed by your last name, and hit the "Generate" button.');
+  }
+}
+
+/**
+ * Implementation of custom function that implements the generation of bobby names.
+ */
+function bobby_name_generator_form() {
+  $form['first_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('First Name'),
+    '#size' => 28,
+    '#maxlength' => 20,
+  );
+
+  $form['last_name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Last Name',
+    '#size' => 28,
+    '#maxlength' => 20,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Generate'),
+    '#ajax' => array(
+      'callback' => 'bobby_name_generator_form_submit',
+      'wrapper' => 'bobby_message',
+      'method' => 'replace',
+    ),
+  );
+
+  $form['bobby_name'] = array(
+    '#type' => 'text',
+    '#prefix' => '<div id="bobby_message">',
+    '#suffix' => '</div>',
+    '#weight' => -1,
+  );
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_block_view
+ * @param  string $delta name of block
+ * @return block     contents of block
+ */
+function bobby_name_generator_block_view($delta = '') {
+  switch ($delta) {
+    case 'bobby_name_generator':
+      $block['subject'] = t('Generate Bobby Name');
+      if(user_access('access content')) {
+        $block['content'] = drupal_get_form('bobby_name_generator_form'); // insert bobbyname variable here!
+      }
+    return $block;
+  }
+}
+
+function bobby_name_generator_form_submit($form, &$form_state) {
+  $first_name = strtolower($form_state['values']['first_name']);
+  $last_name = str_split($form_state['values']['last_name']);
+  $last_name_str = strtolower($form_state['values']['last_name']);
+  $bobby_name = array();
+  $vowels = array('a', 'e', 'i', 'o', 'u', 'y');
+  for ($j = 1; $j < count($last_name); $j++) {
+    if (substr($last_name_str, 0, 2) == "mc") {
+      $bobby_name = substr($last_name_str, 0, 2) . ucfirst(substr($first_name, 0, 2));
+      break;
+    }
+
+    if (in_array($last_name[$j], $vowels)) {
+      $bobby_name = substr($last_name_str, 0, ($j + 1)) . substr($first_name, 0, 2);
+      break;
+    }
+  }
+  return "<div id='bobby_message'>" . "Your Bobbyname is Bobby " . ucfirst($bobby_name) . "</div>";
+}
