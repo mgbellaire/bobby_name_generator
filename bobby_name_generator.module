@@ -70,7 +70,7 @@ function bobby_name_generator_form() {
  * @param string $delta
  *   name of block
  *
- * @return block
+ * @return array
  *   contents of block
  */
 function bobby_name_generator_block_view($delta = '') {
