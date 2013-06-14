@@ -36,12 +36,14 @@ function bobby_name_generator_form() {
     '#type' => 'textfield',
     '#title' => t('First Name'),
     '#maxlength' => 60,
+    '#size' => 20,
   );
 
   $form['last_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Last Name'),
     '#maxlength' => 60,
+    '#size' => 20,
   );
 
   $form['submit'] = array(
